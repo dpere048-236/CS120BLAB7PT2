@@ -11,14 +11,16 @@
 #include <avr/interrupt.h>
 #ifdef _SIMULATE_
 #include "simAVRHeader.h"
+#include "io.c"
 #endif
 volatile unsigned char TimerFlag = 0; //TimerISR() sets this to 1, C program clears it to 0
 
 //variables for mapping AVR TSR
 unsigned long _avr_timer_M = 1; //start count from here down to zero, default = 1ms
 unsigned long _avr_timer_cntcurr = 0; //internal count of ticks (1ms)
-unsigned char tmpB = 0x00; //initializes variable
-enum States{start, lightA, lightB, lightC}state;
+unsigned char tmpC = 0x00;
+unsigned char tmpA = 0x00; //initializes variable
+enum States{wait, increase, decrease, zero}state;
 
 void TimerOn() {
 	//avr timer/cnter
@@ -60,19 +62,64 @@ void TimerSet(unsigned long M) {
 	_avr_timer_M = M;
 	_avr_timer_cntcurr = _avr_timer_M;
 }
-void lightTick(){
+void buttonTick(){
 	switch(state)
 	{
+	case wait:
+	
+	break;
+	
+	case increase:
+	
+	break;
+	
+	case decrease:
+	
+	break;
+	
+	case zero:
+	
+	break;
+	
 	}
 	switch(state){
+	case wait:
 
+	break;
+
+	case increase:
+	
+	break;
+	
+	case decrease:
+	
+	break;
+		
+	case zero:
+	
+	break;
 	}
 }
 int main(void) {
     /* Insert DDR and PORT initializations */
-	state = start;
+	DDRA = 0x00; PORTA = 0xFF;
+	DDRC = 0xFF; PORTC = 0x00;
+	DDRD = 0xFF; PORTD = 0x00;
+	TimerSet(1000); //1 second
+	TimerOn();
+
+	//LCD DISPLAY
+	LCD_init();
+	LCD_ClearScreen();
+	tmpA = 0x00;
+	state = wait;//waits for user input
     /* Insert your solution below */
     while (1) {
+	LCD_Cursor(1);
+	button_Tick();
+	LCD_WriteData(tmpA +'0');
+	while(!TimerFlag){}
+	TimerFlag = 0;
     }
     return 0;
 }
